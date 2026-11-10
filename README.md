@@ -1,12 +1,13 @@
 # JavaScript Promises
 
-A small collection of plain JavaScript examples covering promise resolution, rejection, `Promise.all`, and `Promise.race`.
+A small, runnable JavaScript reference for promise fulfillment and rejection, `Promise.all`, `Promise.race`, and `async`/`await`.
 
 ## Features
 
-- Even and odd value promise handling
-- Multiple promise coordination with `Promise.all`
-- First-settled promise examples with `Promise.race`
+- Fulfillment and rejection with `Error` objects
+- Concurrent tasks with `Promise.all`, including input-order results
+- Timed `Promise.race` examples for both fulfillment and rejection
+- A concise `async`/`await` example
 - Simple runnable JavaScript without a framework
 
 ## Run locally
@@ -15,11 +16,17 @@ A small collection of plain JavaScript examples covering promise resolution, rej
 node index.js
 ```
 
-## Future prospects
+## What to observe
 
-- Add examples for `async` and `await`
-- Add reusable promise helper functions
-- Add small exercises with expected outputs
+- `Promise.all` returns results in the same order as its input, even when tasks finish in a different order.
+- `Promise.race` settles with whichever input settles first, whether it fulfills or rejects.
+- `Promise.race` does not cancel the other tasks; their timers continue to run.
+
+## Further practice
+
+- Compare `Promise.all` with `Promise.allSettled` and `Promise.any`.
+- Add cancellation with `AbortController` to a promise-based request.
+- Change the task delays and predict the output before running the file.
 
 ## Links
 

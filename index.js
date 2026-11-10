@@ -1,41 +1,57 @@
-// idea of javascript promise
-const promise1 = (number) => new Promise((resolve, reject) => {
-    if (number % 2 === 0) { resolve("success"); }
-    else { reject("failure"); }
+const promiseForNumber = (number) => new Promise((resolve, reject) => {
+    if (!Number.isInteger(number)) {
+        reject(new TypeError("Expected an integer"));
+        return;
+    }
+
+    if (number % 2 === 0) {
+        resolve(`${number} is even`);
+    } else {
+        reject(new Error(`${number} is odd`));
+    }
 });
 
-promise1(1234)
-    .then(message => { console.log(message); })
-    .catch(message => { console.log(message); });
+promiseForNumber(1234)
+    .then((message) => console.log(message))
+    .catch((error) => console.error(error.message));
 
-promise1(4321)
-    .then(message => { console.log(message); })
-    .catch(message => { console.log(message); });
+promiseForNumber(4321)
+    .then((message) => console.log(message))
+    .catch((error) => console.error(error.message));
 
-
-
-// promise all and race
-const promise2 = new Promise((resolve, reject) => { resolve("task 2 complete"); });
-const promise3 = new Promise((resolve, reject) => { resolve("task 3 complete"); });
-const promise4 = new Promise((resolve, reject) => { resolve("task 4 complete"); });
-Promise.all([promise2, promise3, promise4]).then(messages => {
-    console.log(messages);
+const delayedValue = (value, milliseconds) => new Promise((resolve) => {
+    setTimeout(resolve, milliseconds, value);
 });
 
+Promise.all([
+    delayedValue("task 1 complete", 120),
+    delayedValue("task 2 complete", 40),
+    delayedValue("task 3 complete", 80),
+])
+    .then((results) => console.log("Promise.all results:", results))
+    .catch((error) => console.error("A task failed:", error.message));
 
-// promise race
-let p1 = Promise.reject(111);
-let p2 = Promise.resolve(222);
-let p3 = new Promise((resolve, reject) => { setTimeout(resolve, 1000, 333); });
+Promise.race([
+    delayedValue("slow task finished", 250),
+    delayedValue("fast task finished", 80),
+])
+    .then((winner) => console.log("First to finish:", winner))
+    .catch((error) => console.error("Race rejected:", error.message));
 
-Promise.race([p3, p2, p1]).then(result => {
-    console.log('winning:', result);
-}).catch((result) => {
-    console.log('Failed:', result);
+const failAfter = (milliseconds) => new Promise((resolve, reject) => {
+    setTimeout(() => reject(new Error("Fast task failed")), milliseconds);
 });
 
-Promise.race([p1, p2, p3]).then(result => {
-    console.log('winning:', result);
-}).catch((result) => {
-    console.log('Failed:', result);
-});
+Promise.race([
+    delayedValue("later success", 250),
+    failAfter(80),
+])
+    .then((winner) => console.log("First to finish:", winner))
+    .catch((error) => console.error("First task settled with an error:", error.message));
+
+async function showAsyncResult() {
+    const result = await delayedValue("async/await result", 60);
+    console.log(result);
+}
+
+showAsyncResult().catch((error) => console.error(error.message));
